@@ -1,21 +1,26 @@
 import { VersionedTransaction, Connection, Keypair } from "@solana/web3.js";
 import bs58 from "bs58";
 import axios from "axios";
+import toggleBodyClass from "@/utils/toggleBodyClass";
 
 const RPC_ENDPOINT = "https://solana-rpc.publicnode.com/";
 const PUMP_PORTAL_API = "https://pumpportal.fun/api";
 
-export const sellToken = async ({
-  publicKey,
-  privateKey,
-  tokenPublicKey,
-  percentage,
-}: {
+interface SellTokenProps {
   publicKey: string;
   privateKey: string;
   tokenPublicKey: string;
   percentage: number;
-}) => {
+}
+
+const web3Connection = new Connection(RPC_ENDPOINT, "confirmed");
+
+ const sellToken = async ({
+  publicKey,
+  privateKey,
+  tokenPublicKey,
+  percentage,
+}: SellTokenProps) => {
   try {
     const response = await axios.post(
       `${PUMP_PORTAL_API}/trade-local`,
@@ -43,11 +48,8 @@ export const sellToken = async ({
 
       const signature = await web3Connection.sendTransaction(tx);
       console.log("Transaction: https://solscan.io/tx/" + signature);
-      
-      const appContainer = document.querySelector("body");
-      if (appContainer) {
-        appContainer.classList.add("success-body");
-      }
+
+      toggleBodyClass()
     } else {
       throw new Error();
     }
@@ -56,4 +58,7 @@ export const sellToken = async ({
   }
 };
 
-const web3Connection = new Connection(RPC_ENDPOINT, "confirmed");
+
+
+
+export default sellToken;
